@@ -1,0 +1,55 @@
+###
+
+# @name addSecurity
+
+POST https://{{ServiceManager}}/services/v2/authorizations/Security/securityadmin
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"Security Administration",
+	"type":"Basic",
+	"user":"securityadmin"
+}
+
+###
+
+# @name addAdministrator
+
+POST https://{{ServiceManager}}/services/v2/authorizations/Administrator/administrator
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"Administration",
+	"type":"Basic",
+	"user":"administrator"
+}
+
+###
+
+# @name addOperator
+
+POST https://{{ServiceManager}}/services/v2/authorizations/Operator/operator
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"Operator",
+	"type":"Basic",
+	"user":"operator"
+}
+
+###
+
+# @name addUser
+
+POST https://{{ServiceManager}}/services/v2/authorizations/User/user
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"User",
+	"type":"Basic",
+	"user":"user"
+}

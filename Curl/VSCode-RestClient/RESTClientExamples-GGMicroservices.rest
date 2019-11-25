@@ -1,0 +1,230 @@
+GET https://{{ServiceManager}}/services/v2/deployments
+Authorization: Basic {{Admin}} {{PWD}}
+
+###
+
+# @name addAdministrator
+
+POST https://{{Atlanta_AdminServer}}/services/v2/authorizations/Administrator/streamadmin
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"Stream Administration",
+	"type":"Basic",
+	"user":"streamadmin"
+}
+
+###
+
+# @name addAdministrator
+
+POST https://{{SanFran_AdminServer}}/services/v2/authorizations/Administrator/streamadmin
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"credential":"WElcome12345##",
+	"info":"Stream Administration",
+	"type":"Basic",
+	"user":"streamadmin"
+}
+
+###
+
+# @name addCredential
+
+POST https://{{Atlanta_AdminServer}}/services/v2/credentials/OracleGoldenGate/CGGATE
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "userid":"c##ggate@172.28.128.81:1521/orcl.oracle.com",
+    "password":"WElcome12345##"
+}
+
+###
+
+# @name addCredential
+
+POST https://{{Atlanta_AdminServer}}/services/v2/credentials/OracleGoldenGate/LGGATE
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "userid":"ggate@172.28.128.81:1521/oggtst.oracle.com",
+    "password":"WElcome12345##"
+}
+
+###
+
+# @name addCredential
+
+POST https://{{Atlanta_AdminServer}}/services/v2/credentials/Network/streamadmin
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "userid":"streamadmin",
+    "password":"WElcome12345##"
+}
+
+###
+
+# @name addConnection
+
+POST https://{{Atlanta_AdminServer}}/services/v2/connections/CGGATE
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "credentials":{
+        "domain":"OracleGoldenGate",
+        "alias":"CGGATE"
+    }
+}
+
+###
+
+# @name getConnection
+
+GET https://{{Atlanta_AdminServer}}/services/v2/connections
+Authorization: Basic {{Admin}} {{PWD}}
+
+###
+
+# @name addSchemaTrandata
+
+POST https://{{Atlanta_AdminServer}}/services/v2/connections/CGGATE/trandata/schema
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"operation":"add",
+	"schemaName":"oggtst.tstusr",
+	"prepareCsnMode":"nowait"
+}
+
+###
+
+# @name validateSchemaTrandata
+
+POST https://{{Atlanta_AdminServer}}/services/v2/connections/OracleGoldenGate.CGGATE/trandata/schema
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+	"operation":"info",
+	"schemaName":"oggtst.tstusr"
+}
+
+###
+
+# @name addExtract
+
+POST https://{{Atlanta_AdminServer}}/services/v2/extracts/IEXTSRC
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "intent":"Unidirectional",
+    "config":[
+        "extract IEXTSRC",
+        "useridalias CGGATE domain OracleGoldenGate",
+        "exttrail aa",
+        "DDL",
+        "sourcecatalog oggtst",
+        "table tstusr.lrg_table, keycols(rid);"
+    ],
+    "source":{
+        "tranlogs":"integrated"
+    },
+    "credentials":{
+        "alias":"CGGATE"
+    },
+    "registration":{
+        "containers": [ "oggtst" ],
+        "optimized":false
+    },
+    "begin":"now",
+    "targets":[
+        {
+            "name":"aa",
+            "sizeMB":15
+        }
+    ],
+    "status":"running"
+}
+
+###
+
+# @name addCredential
+
+POST https://{{SanFran_AdminServer}}/services/v2/credentials/OracleGoldenGate/TGGATE
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "userid":"ggate@172.17.0.2:1521/oggtgt.oracle.com",
+    "password":"WElcome12345##"
+}
+
+###
+
+# @name addCheckpointTable
+
+POST https://{{SanFran_AdminServer}}/services/v2/connections/OracleGoldenGate.TGGATE/tables/checkpoint
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "operation":"add",
+    "name":"oggtgt.ggate.checkpoint"
+}
+
+###
+
+# @name addReplicat
+
+POST https://{{SanFran_AdminServer}}/services/v2/replicats/IRTGT
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "config":[
+        "Replicat    IRTGT",
+        "UseridAlias TGGATE domain OracleGoldenGate",
+        "DDL",
+        "Map oggtst.tstusr.lrg_table, Target tstusr.lrg_table, keycols(rid);"
+    ],
+    "source":{
+        "name":"ab"
+    },
+    "credentials":{
+        "alias":"TGGATE"
+    },
+    "checkpoint":{
+        "table":"oggtgt.ggate.checkpoint"
+    },
+    "mode":{
+    	"type":"integrated",
+    	"parallel": false
+    },
+    "begin":"now",
+    "status":"running"
+}
+
+###
+
+# @name startExtract
+
+POST https://{{AdminServer}}/services/v2/commands/execute
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "name":"start",
+    "processName":"IEXT",
+    "processType":"extract"
+}
+
+###
+
+# @name startReplicat
+
+POST https://{{AdminServer}}/services/v2/commands/execute
+Authorization: Basic {{Admin}} {{PWD}}
+
+{
+    "name":"start",
+    "processName":"IREP",
+    "processType":"replicat"
+}
